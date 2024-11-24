@@ -5,4 +5,5 @@ module.exports = function(app) {
         res.send('Hello routes!');
     });
     app.get('/tests', tests.getTests);
+    app.get('/test-q-a/:id', tests.getTestQuestionsAnswers);
 }
