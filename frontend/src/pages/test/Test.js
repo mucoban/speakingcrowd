@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Test.scss';
-import { questions } from "./test-data";
+// import { questions } from "./test-data";
 
 export default function Test() {
 
-    // let activeQuestion = questions[0];
-
+    const [questions, setQuestions] = useState(null);
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+
+    useEffect(() => {
+        axios.get(`http://localhost:3000/test-q-a/1`)
+        .then(res => {
+            setQuestions(res.data);
+        });
+    }, []);
 
     const assess = answer => {
         if (!answer.correct) { alert("Wrong answer!"); }
@@ -26,12 +33,12 @@ export default function Test() {
                 <div className="row">
                     <div className="col text-center">
                         <div className="main-title">Test</div>
-                        <div className="question">{questions[activeQuestionIndex].question}</div>
+                        <div className="question">{ questions && questions[activeQuestionIndex].question}</div>
                         <div className="answers">
-                            { questions[activeQuestionIndex].answers.map( (answer, index) => (
+                            { questions && questions[activeQuestionIndex].answers.map( (answer, index) => (
                                 <div key={index} className="answer" onClick={() => assess(answer)}>
                                     <span className="answer-letter">{index} - </span>
-                                    <span className="answer-text">{answer.content}</span>
+                                    <span className="answer-text">{answer.text}</span>
                                 </div>
                             ) )}
                         </div>

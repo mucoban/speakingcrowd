@@ -19,21 +19,27 @@ async function getTestQuestionsAnswers(req, res, next) {
             where Q.test_id = T.id AND A.question_id = Q.id AND T.id = ?`, 
             [req.params.id]);
 
-        // console.log('rows', rows);
-
         if (rows.length) {
             rows = rows.reduce((total, item) => {
-                // const found = total.find(t => t.q_id === item.q_id);
-                const foundIndex = total.findIndex(t => t.q_id === item.q_id);
-                // console.log('foundIndex', foundIndex);
+                const foundIndex = total.findIndex(t => t.id === item.q_id);
+
+                const answer = {
+                    id: item.a_id,
+                    text: item.a_text,
+                    correct: item.a_correct,
+                }
+
                 if (foundIndex === -1) {
-                    total.push({ q_id: item.q_id, answers: [item] });
+                    total.push({
+                        id: item.q_id,
+                        question: item.q_text,
+                        answers: [answer]
+                    });
                 }
                 else {
-                    // found.answers.push(item);
-                    total[foundIndex].answers.push(item);
+                    total[foundIndex].answers.push(answer);
                 }
-                // console.log('total', total);
+
                 return total;
             }, []);
         }
