@@ -8,7 +8,7 @@ module.exports = function(app) {
     });
     app.get('/tests', tests.getTests);
     app.get('/test-q-a/:id', checkAuthentication, tests.getTestQuestionsAnswers);
-    app.get('/login', login);
-    app.get('/register', register);
+    app.post('/login', login);
+    app.post('/register', register);
     app.get('/give-hash', giveHash);
 }

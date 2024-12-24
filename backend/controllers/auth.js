@@ -16,7 +16,7 @@ async function login(req, res, next) {
 
     const rows = await query(`SELECT username, password FROM users WHERE username = ?`, [username]);
 
-    if (!rows.length) {
+    if (!rows?.length) {
         return res.status(400).send("username or password wrong 2");
     }
 
