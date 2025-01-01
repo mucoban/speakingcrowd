@@ -1,6 +1,9 @@
 import axiosConfig from '../config/axiosConfig';
+import { useAuth } from '../provider/AuthProvider';
 
 export default function LoginBox() { 
+
+    const { login } = useAuth();
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -15,6 +18,9 @@ export default function LoginBox() {
                 if (res.status === 200) { 
                     alert("Login successful"); 
                     event.target.reset();
+
+                    const token = res.data.token;
+                    login(token);
                 }
             })
             .catch( error => {
