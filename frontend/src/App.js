@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Test from './pages/test/Test';
 import Login from './pages/login/Login';
 import { AuthProvider } from './provider/AuthProvider';
+import Profile from './pages/profile/Profile';
+import Authorization from './components/Authorization';
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="test" element={<Test />} />
+          <Route path="" element={<Authorization />}>
+            <Route path='profile' element={<Profile />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
