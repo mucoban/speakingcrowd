@@ -1,6 +1,9 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../provider/AuthProvider";
 
 export default function Navbar() {
+    const { isLoggedIn, logout } = useAuth();
+
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary py-4">
             <div className="container">
@@ -13,6 +16,14 @@ export default function Navbar() {
                 <li className="nav-item d-none d-sm-flex">
                     <NavLink className="nav-link fw-bold" to="/">Speaking Crowd Nedir?</NavLink>
                 </li>
+                {isLoggedIn ? 
+                    <li className="nav-item d-none d-sm-flex">
+                        <NavLink className="nav-link fw-bold" onClick={logout}>Logout</NavLink>
+                    </li> :
+                    <li className="nav-item d-none d-sm-flex">
+                        <NavLink className="nav-link fw-bold" to="/login">Login</NavLink>
+                    </li>
+                }
                 </ul>
             </div>
             </div>
