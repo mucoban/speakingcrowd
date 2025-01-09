@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import axiosConfig from '../config/axiosConfig';
 
 const AuthContext = createContext(null);
 
@@ -8,16 +9,26 @@ export const AuthProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [token, setToken] = useState('');
     const [user, setUser] = useState({});
+    
+    let axiosConfigInterceptors;
 
     const login = (token, setLocalStorage = true) => {
         if (setLocalStorage) localStorage.setItem(TOKEN_KEY, token);
         setIsLoggedIn(true);
         setToken(token);
+
+        axiosConfigInterceptors = axiosConfig.interceptors.request.use(config => {
+            config.headers = {
+                Authorization: `Bearer ${token}`
+            }
+            return config;
+        });
     };
 
     const logout = (token) => {
         localStorage.setItem(TOKEN_KEY, '');
         setIsLoggedIn(false);
+        axiosConfigInterceptors.interceptors.request.eject(axiosConfigInterceptors);
     };
 
     useEffect(() => {

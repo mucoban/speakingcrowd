@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import axiosConfig from '../../config/axiosConfig';
 import './Test.scss';
-import RegisterBox from '../../components/RegisterBox';
+// import RegisterBox from '../../components/RegisterBox';
 // import { questions } from "./test-data";
 
 export default function Test() {
@@ -8,12 +9,12 @@ export default function Test() {
     const [questions, setQuestions] = useState(null);
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
-    // useEffect(() => {
-    //     axios.get(`http://localhost:3000/test-q-a/1`)
-    //     .then(res => {
-    //         setQuestions(res.data);
-    //     });
-    // }, []);
+    useEffect(() => {
+        axiosConfig.get(`/test-q-a/1`)
+        .then(res => {
+            setQuestions(res.data);
+        });
+    }, []);
 
     const assess = answer => {
         if (!answer.correct) { alert("Wrong answer!"); }
@@ -34,7 +35,7 @@ export default function Test() {
                     <div className="col text-center">
                         <div className="main-title">Test</div>
 
-                        <RegisterBox />
+                        {/* <RegisterBox /> */}
 
                         <div className="question">{ questions && questions[activeQuestionIndex].question}</div>
                         <div className="answers">
