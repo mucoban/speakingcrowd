@@ -10,6 +10,39 @@
     flex-direction: row;
 }
 
+.test-page {
+
+    .page-title { 
+        text-align: center;
+        margin: 100px 0 20px;
+        font-weight: bold; 
+        font-size: 25px;
+    }
+
+    .section-title { 
+        margin: 100px 0 50px;
+        font-weight: bold; 
+        font-size: 18px;
+    }
+
+    .section {}
+
+    .rank { font-style: italic; }
+    
+    .test-cards {
+        display: flex; margin: -5px;
+
+        .tcard {
+            border: 1px solid blue;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 5px;
+        }
+
+    }
+
+}
+
 @media (max-width: 768px) { 
     // .d-sm-none { display: none; }
 }
