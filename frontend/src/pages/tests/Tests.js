@@ -1,4 +1,19 @@
+import { useState, useEffect } from 'react';
+import axiosConfig from '../../config/axiosConfig';
+import { Link } from 'react-router-dom';
+
 export default function Tests() {
+
+    const [tests, setTests] = useState([]);
+
+    useEffect(() => {
+        axiosConfig.get(`/tests`)
+        .then(res => {
+            const tests = res.data;
+            setTests(tests);
+        });
+    }, []);
+
     return <div className="test-page">
         <div className="container">
             <p className="page-title">All Tests</p>
@@ -9,8 +24,11 @@ export default function Tests() {
             <div className="section">
                 <p className="section-title">Tests:</p>
                 <div className="test-cards">
-                    <div className="tcard">Test 1</div>
-                    <div className="tcard">Test 2</div>
+                    { tests.map((test, index) => 
+                        <Link className="tcard" key={index} to={`/test/${test.id}`}>
+                            {test.name}
+                        </Link>
+                        ) }
                 </div>
             </div>
         </div>

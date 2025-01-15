@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import axiosConfig from '../../config/axiosConfig';
 import './Test.scss';
+import { useParams } from 'react-router-dom';
 // import RegisterBox from '../../components/RegisterBox';
 // import { questions } from "./test-data";
 
 export default function Test() {
 
+    const params = useParams();
     const [questions, setQuestions] = useState(null);
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
     useEffect(() => {
-        axiosConfig.get(`/test-q-a/1`)
+        axiosConfig.get(`/test-q-a/${params.id}`)
         .then(res => {
             setQuestions(res.data);
         });
@@ -37,9 +39,9 @@ export default function Test() {
 
                         {/* <RegisterBox /> */}
 
-                        <div className="question">{ questions && questions[activeQuestionIndex].question}</div>
+                        <div className="question">{ questions && questions[activeQuestionIndex]?.question}</div>
                         <div className="answers">
-                            { questions && questions[activeQuestionIndex].answers.map( (answer, index) => (
+                            { questions && questions[activeQuestionIndex]?.answers.map( (answer, index) => (
                                 <div key={index} className="answer" onClick={() => assess(answer)}>
                                     <span className="answer-letter">{index} - </span>
                                     <span className="answer-text">{answer.text}</span>

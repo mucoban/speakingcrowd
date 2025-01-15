@@ -20,7 +20,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="tests" element={<Tests />} />
           <Route path="" element={<Authorization />}>
-            <Route path="test" element={<Test />} />
+            <Route path="test/:id" element={<Test />} />
             <Route path='profile' element={<Profile />} />
           </Route>
         </Routes>
