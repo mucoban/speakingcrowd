@@ -1,8 +1,23 @@
+const jwt = require("jsonwebtoken");
 const db = require('../db');
 
 async function getTests(req, res, next) {
     try {
         const rows = await db.query(`select * from tests`);
+
+        if (req.query.includeUserPassed) {
+            
+            const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
+            const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+            const passedTestId = decoded.passed_test_id;
+
+            const updatedRows = rows.map(test => ({
+                ...test,
+                usedPassed: test.id <= passedTestId
+            }));        
+
+            return res.json(updatedRows);
+        }
         res.json(rows);
     }
     catch (error) {

@@ -14,7 +14,7 @@ function hashPassword(password) {
 async function login(req, res, next) {
     const { username, password } = req.body;
 
-    const rows = await query(`SELECT username, password FROM users WHERE username = ?`, [username]);
+    const rows = await query(`SELECT username, password, passed_test_id FROM users WHERE username = ?`, [username]);
 
     if (!rows?.length) {
         return res.status(400).send("username or password wrong 2");
