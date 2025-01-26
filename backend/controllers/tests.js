@@ -13,7 +13,7 @@ async function getTests(req, res, next) {
 
             const updatedRows = rows.map(test => ({
                 ...test,
-                usedPassed: test.id <= passedTestId
+                userPassed: test.id <= passedTestId
             }));        
 
             return res.json(updatedRows);

@@ -7,7 +7,7 @@ export default function Tests() {
     const [tests, setTests] = useState([]);
 
     useEffect(() => {
-        axiosConfig.get(`/tests`)
+        axiosConfig.get(`/tests`, { params: { includeUserPassed: true } })
         .then(res => {
             const tests = res.data;
             setTests(tests);
@@ -25,8 +25,11 @@ export default function Tests() {
                 <p className="section-title">Tests:</p>
                 <div className="test-cards">
                     { tests.map((test, index) => 
-                        <Link className="tcard" key={index} to={`/test/${test.id}`}>
-                            {test.name}
+                        <Link 
+                            className="tcard" 
+                            key={index} to={`/test/${test.id}`} 
+                            onClick={ (event) => test.userPassed ||event.preventDefault() }>
+                            {test.name} { test.userPassed || '- Locked' }
                         </Link>
                         ) }
                 </div>
