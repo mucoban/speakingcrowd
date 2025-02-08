@@ -9,7 +9,9 @@ async function getTests(req, res, next) {
             
             const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
             const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-            const passedTestId = decoded.passed_test_id;
+
+            const users = await db.query(`SELECT passed_test_id FROM users WHERE username = ?`, [decoded.username]);
+            const passedTestId = users?.[0]?.passed_test_id;
 
             const updatedRows = rows.map(test => ({
                 ...test,
@@ -89,11 +91,12 @@ async function assessSelection(req, res) {
             
                 const user = jwt.verify(token, process.env.TOKEN_SECRET);
                 
-                const newPassedTestId = testId + 1;
+                const newPassedTestId = +testId + 1;
                 await db.query(`UPDATE users SET passed_test_id = ? WHERE username = ?`, [newPassedTestId, user.username]);
 
                 return res.json({
                     status: true,
+                    testPassed: true,
                     message: 'Answer is correct and test is passed'
                 });
             }

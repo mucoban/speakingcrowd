@@ -28,7 +28,7 @@ export default function Tests() {
                         <Link 
                             className="tcard" 
                             key={index} to={`/test/${test.id}`} 
-                            onClick={ (event) => test.userPassed ||event.preventDefault() }>
+                            onClick={ (event) => test.userPassed || event.preventDefault() }>
                             {test.name} { test.userPassed || '- Locked' }
                         </Link>
                         ) }
