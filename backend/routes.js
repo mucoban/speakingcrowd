@@ -6,9 +6,10 @@ module.exports = function(app) {
     app.get('/routes', (req, res, next) => {
         res.send('Hello routes!');
     });
-    app.get('/tests', tests.getTests);
-    app.get('/test-q-a/:id', checkAuthentication, tests.getTestQuestionsAnswers);
     app.post('/login', login);
     app.post('/register', register);
     app.get('/give-hash', giveHash);
+    app.get('/tests', tests.getTests);
+    app.get('/test-q-a/:id', checkAuthentication, tests.getTestQuestionsAnswers);
+    app.post('/assess-selection', checkAuthentication, tests.assessSelection);
 }

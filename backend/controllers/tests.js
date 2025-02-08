@@ -66,7 +66,56 @@ async function getTestQuestionsAnswers(req, res, next) {
     }
 }
 
+async function assessSelection(req, res) {
+    try {
+        const { testId, questionId, answerId } = req.body;
+
+        if (!testId) return res.json({ status: false, message: 'testId is missing' });
+        if (!questionId) return res.json({ status: false, message: 'questionId is missing' });
+        if (!answerId) return res.json({ status: false, message: 'answerId is missing' });
+
+        const rows = await db.query(`SELECT Q.id as qId, A.correct,
+            (SELECT IF(Q2.id = Q.id, true, false) FROM questions Q2 WHERE Q2.test_id = T.id ORDER BY Q2.id DESC LIMIT 1) as isLastQuestion
+            FROM tests T, questions Q, answers A
+            WHERE  A.question_id = Q.id AND Q.test_id = T.id 
+            AND T.id = ? and Q.id = ? and A.id = ?`, [testId, questionId, answerId]);
+        
+        if (rows?.[0]?.correct === 1) {
+            
+            if (rows?.[0]?.isLastQuestion) {
+
+                const token = req.headers.authorization && req.headers.authorization.split(" ")[1];     
+                if (!token) return res.sendStatus(401);
+            
+                const user = jwt.verify(token, process.env.TOKEN_SECRET);
+                
+                const newPassedTestId = testId + 1;
+                await db.query(`UPDATE users SET passed_test_id = ? WHERE username = ?`, [newPassedTestId, user.username]);
+
+                return res.json({
+                    status: true,
+                    message: 'Answer is correct and test is passed'
+                });
+            }
+
+            return res.json({
+                status: true,
+                message: 'Answer is correct'
+            });
+        } 
+
+        return res.json({
+            status: false,
+            message: 'Answer is incorrect'
+        });
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
     getTests,
-    getTestQuestionsAnswers
+    getTestQuestionsAnswers,
+    assessSelection
 }
