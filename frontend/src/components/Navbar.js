@@ -11,7 +11,7 @@ export default function Navbar() {
             <div>
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                    <NavLink className="nav-link fw-bold" to="test">Teste Başla</NavLink>
+                    <NavLink className="nav-link fw-bold" to="tests">Teste Başla</NavLink>
                 </li>
                 <li className="nav-item d-none d-sm-flex">
                     <NavLink className="nav-link fw-bold" to="/">Speaking Crowd Nedir?</NavLink>
