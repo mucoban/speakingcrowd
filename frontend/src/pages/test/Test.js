@@ -14,7 +14,7 @@ export default function Test() {
     useEffect(() => {
         axiosConfig.get(`/test-q-a/${params.id}`)
             .then(res => {
-                const questions = res.data.map(q => {
+                res.data.map(q => {
 
                     const answers = q.answers.slice();
                     const shuffledAnswers = answers.slice().reduce((newAnswers, answer) => { 
@@ -31,7 +31,7 @@ export default function Test() {
 
                 setQuestions(res.data);
             });
-    }, []);
+    }, [params.id]);
 
     const assess = answer => {
 
