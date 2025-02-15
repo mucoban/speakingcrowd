@@ -17,9 +17,15 @@ export default function Navbar() {
                     <NavLink className="nav-link fw-bold" to="/">Speaking Crowd Nedir?</NavLink>
                 </li>
                 {isLoggedIn ? 
-                    <li className="nav-item d-none d-sm-flex">
-                        <NavLink className="nav-link fw-bold" onClick={logout}>Logout</NavLink>
-                    </li> :
+                    <>
+                        <li className="nav-item d-none d-sm-flex">
+                            <NavLink className="nav-link fw-bold" to="/profile">P</NavLink>
+                        </li>
+                        <li className="nav-item d-none d-sm-flex">
+                            <NavLink className="nav-link fw-bold" onClick={logout}>Logout</NavLink>
+                        </li>
+                    </>
+                     :
                     <li className="nav-item d-none d-sm-flex">
                         <NavLink className="nav-link fw-bold" to="/login">Login</NavLink>
                     </li>
