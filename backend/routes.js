@@ -12,6 +12,8 @@ module.exports = function(app) {
     app.get('/give-hash', giveHash);
     app.get('/tests', tests.getTests);
     app.get('/user', user.getDetails);
+    app.post('/user', user.setDetails);
+    app.post('/crendentials', user.setPassword);
     app.get('/test-q-a/:id', checkAuthentication, tests.getTestQuestionsAnswers);
     app.post('/assess-selection', checkAuthentication, tests.assessSelection);
 }

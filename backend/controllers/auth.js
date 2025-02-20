@@ -1,7 +1,6 @@
 const { generateToken } = require("./jwt-helper");
 const { createHmac } = require("crypto");
 const { query } = require('../db');
-const { log } = require("console");
 
 
 function hashPassword(password) {
@@ -59,6 +58,7 @@ async function giveHash(req, res, next) {
 module.exports = {
     login,
     register,
-    giveHash
+    giveHash,
+    hashPassword
 }
 
