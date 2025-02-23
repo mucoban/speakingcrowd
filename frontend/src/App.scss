@@ -45,6 +45,37 @@
 
 }
 
+.update-profile {
+    .main-holder {
+        max-width:  800px;
+        margin: 0 auto;
+    }
+
+    .info-card {
+        display: flex;
+        padding: 10px;
+        justify-content: space-between;
+        border: 1px solid #ddd;
+        background: #fff;
+        align-items: center;
+        border-radius: 5px;
+
+        &.row {
+            flex-wrap: wrap;
+
+            input {
+                margin-top: 5px;
+            }
+        }
+        
+        div {
+            flex-grow: 1;
+        }
+
+        button { margin: 10px; }
+    }
+}
+
 @media (max-width: 768px) { 
     // .d-sm-none { display: none; }
 }
