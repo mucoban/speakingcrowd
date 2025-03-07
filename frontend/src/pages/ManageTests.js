@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axiosConfig from '../config/axiosConfig';
+const _ = require('lodash');
 
 export default function ManageTests () {
 
@@ -7,6 +8,20 @@ export default function ManageTests () {
     const [activeTest, setActiveTest] = useState();
     const [questions, setQuestions] = useState([]);
     const [activeQuestion, setActiveQuestion] = useState();
+    const [inputQuestion, setInputQuestion] = useState();
+
+    const inputsHandler = (e, answerIndex) => {
+        if (answerIndex !== undefined) { 
+            const answers = inputQuestion.answers.slice();
+            answers[answerIndex].text = e.target.value;
+            setInputQuestion( { 
+                ...inputQuestion, 
+                answers
+            } );
+        } else {
+          setInputQuestion( { ...inputQuestion, [e.target.name]: e.target.value} );
+        }        
+    }
 
     useEffect(() => {
         axiosConfig.get(`/tests`)
@@ -23,6 +38,25 @@ export default function ManageTests () {
             });
         }
     }, [activeTest]);
+
+    const changed = useMemo(() => {
+            return activeQuestion?.question !== inputQuestion?.question
+            || activeQuestion?.answers.some((answer, index) => {
+                return answer?.text !== inputQuestion.answers?.[index]?.text;
+            } );
+        }, [activeQuestion, inputQuestion]);
+
+    const selectQuestion = (question) => {
+        const cloneA = _.cloneDeep(question);
+        const cloneB = _.cloneDeep(question);
+        setActiveQuestion(cloneA);
+        setInputQuestion(cloneB);
+    }
+
+    const onSubmit = () => {
+        console.log(inputQuestion);
+        setActiveQuestion(inputQuestion);
+    }
 
     return <div className="test-page">
 
@@ -41,7 +75,7 @@ export default function ManageTests () {
                     <div className="">
                         {questions && questions.map(question => <a key={question.id} 
                             className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
-                            onClick={() => setActiveQuestion(question)}>Question {question.id}</a>)}
+                            onClick={() => selectQuestion(question)}>Question {question.id}</a>)}
                     </div>
 
                     <div className="main-title">Test</div>
@@ -49,15 +83,21 @@ export default function ManageTests () {
                     {activeQuestion && <div>
 
                         <div className="question">
-                        <button className="btn btn-primary m-3" disabled>Save</button>
+                        <button className="btn btn-primary m-3" disabled={!changed} onClick={onSubmit}>Save</button>
                         <br />
-                        <textarea className="w-100" value={activeQuestion?.question} />
+                        <textarea className="w-100" 
+                            name='question' 
+                            value={inputQuestion?.question} 
+                            onChange={inputsHandler} />
                         </div>
                         <button className="btn btn-secondary m-3" disabled>Add Question</button>
                         <div className="answers mb-5">
-                                {activeQuestion.answers.map(answer => <div key={answer.id}
+                                {inputQuestion.answers.map((answer, index) => <div key={answer.id}
                                     className='answer'>
-                                        <span className="answer-text"><input value={answer.text} /></span>
+                                        <span className="answer-text">
+                                            <input value={answer.text}
+                                                onChange={(event) => inputsHandler(event, index)} />
+                                        </span>
                                         <button className="btn btn-secondary m-1">-</button>
                                         <button className="btn btn-secondary m-1">x</button>
                                         <button className={`btn m-1 ${answer?.correct ? 'btn-primary' : 'btn-secondary'}`}>Correct</button>
