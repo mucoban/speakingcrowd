@@ -4,23 +4,43 @@ const _ = require('lodash');
 
 export default function ManageTests () {
 
+    const updateItem = {
+        questionText: 0,
+        answerText: 1,
+        answerCorrectness: 2,
+    };
+
     const [tests, setTests] = useState([]);
     const [activeTest, setActiveTest] = useState();
     const [questions, setQuestions] = useState([]);
     const [activeQuestion, setActiveQuestion] = useState();
     const [inputQuestion, setInputQuestion] = useState();
 
-    const inputsHandler = (e, answerIndex) => {
-        if (answerIndex !== undefined) { 
-            const answers = inputQuestion.answers.slice();
-            answers[answerIndex].text = e.target.value;
-            setInputQuestion( { 
-                ...inputQuestion, 
-                answers
-            } );
-        } else {
-          setInputQuestion( { ...inputQuestion, [e.target.name]: e.target.value} );
-        }        
+    const inputsHandler = (params) => {
+        switch(params.updateItem) {
+            case updateItem.questionText:
+                setInputQuestion( { ...inputQuestion, [params.event.target.name]: params.event.target.value} );
+                break;
+            case updateItem.answerText:
+                const answers = inputQuestion.answers.slice();
+                answers[params.answerIndex].text = params.event.target.value;
+                setInputQuestion( { 
+                    ...inputQuestion, 
+                    answers
+                } );
+                break;
+            case updateItem.answerCorrectness:
+                const answersB = inputQuestion.answers.slice();
+                const correctAnswer = answersB.find(answer => answer.correct === 1);
+                correctAnswer && (correctAnswer.correct = 0);
+                answersB[params.answerIndex].correct = 1;
+                setInputQuestion( { 
+                    ...inputQuestion, 
+                    answersB
+                } );
+                break;
+            default:
+        }     
     }
 
     useEffect(() => {
@@ -39,10 +59,11 @@ export default function ManageTests () {
         }
     }, [activeTest]);
 
-    const changed = useMemo(() => {
+    const changed = useMemo(() => {            
             return activeQuestion?.question !== inputQuestion?.question
             || activeQuestion?.answers.some((answer, index) => {
-                return answer?.text !== inputQuestion.answers?.[index]?.text;
+                return answer?.text !== inputQuestion.answers?.[index]?.text
+                    || answer?.correct !== inputQuestion.answers?.[index]?.correct;
             } );
         }, [activeQuestion, inputQuestion]);
 
@@ -55,7 +76,15 @@ export default function ManageTests () {
 
     const onSubmit = () => {
         console.log(inputQuestion);
-        setActiveQuestion(inputQuestion);
+        const clone = _.cloneDeep(inputQuestion);
+        setActiveQuestion(clone);
+        
+        axiosConfig.put(`/admin/question/${inputQuestion?.id}`, { questionData: JSON.stringify(inputQuestion) } )
+            .then(res => {
+                if (res.status) { return alert('Question has been saved successfully!'); }
+                
+                alert('Question has NOT been saved!');
+            });
     }
 
     return <div className="test-page">
@@ -83,12 +112,12 @@ export default function ManageTests () {
                     {activeQuestion && <div>
 
                         <div className="question">
-                        <button className="btn btn-primary m-3" disabled={!changed} onClick={onSubmit}>Save</button>
-                        <br />
-                        <textarea className="w-100" 
-                            name='question' 
-                            value={inputQuestion?.question} 
-                            onChange={inputsHandler} />
+                            <button className="btn btn-primary m-3" disabled={!changed} onClick={onSubmit}>Save</button>
+                            <br />
+                            <textarea className="w-100" 
+                                name='question' 
+                                value={inputQuestion?.question} 
+                                onChange={(event) => inputsHandler({ event, updateItem: updateItem.questionText })} />
                         </div>
                         <button className="btn btn-secondary m-3" disabled>Add Question</button>
                         <div className="answers mb-5">
@@ -96,11 +125,20 @@ export default function ManageTests () {
                                     className='answer'>
                                         <span className="answer-text">
                                             <input value={answer.text}
-                                                onChange={(event) => inputsHandler(event, index)} />
+                                                onChange={(event) => inputsHandler({ 
+                                                    event, 
+                                                    updateItem: updateItem.answerText,
+                                                    answerIndex: index 
+                                                })} />
                                         </span>
                                         <button className="btn btn-secondary m-1">-</button>
                                         <button className="btn btn-secondary m-1">x</button>
-                                        <button className={`btn m-1 ${answer?.correct ? 'btn-primary' : 'btn-secondary'}`}>Correct</button>
+                                        <button 
+                                            className={`btn m-1 ${answer?.correct ? 'btn-primary' : 'btn-secondary'}`} 
+                                            onClick={() => inputsHandler({ 
+                                                updateItem: updateItem.answerCorrectness,
+                                                answerIndex: index 
+                                            })}>Correct</button>
                                     </div>)}
                         </div>
 
