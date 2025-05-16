@@ -50,12 +50,16 @@ export default function ManageTests () {
             });
     }, []);
 
+    const loadActiveTestAndQuestions = () => {
+        axiosConfig.get(`/test-q-a/${activeTest?.id}`)
+        .then(res => {
+            setQuestions(res.data);
+        });
+    }
+
     useEffect(() => {
         if (activeTest?.id) {
-            axiosConfig.get(`/test-q-a/${activeTest?.id}`)
-            .then(res => {
-                setQuestions(res.data);
-            });
+            loadActiveTestAndQuestions();
         }
     }, [activeTest]);
 
@@ -68,6 +72,7 @@ export default function ManageTests () {
         }, [activeQuestion, inputQuestion]);
 
     const selectQuestion = (question) => {
+        
         const cloneA = _.cloneDeep(question);
         const cloneB = _.cloneDeep(question);
         setActiveQuestion(cloneA);
@@ -75,12 +80,21 @@ export default function ManageTests () {
     }
 
     const onSubmit = () => {
-        console.log(inputQuestion);
         const clone = _.cloneDeep(inputQuestion);
         setActiveQuestion(clone);
         
-        axiosConfig.put(`/admin/question/${inputQuestion?.id}`, { questionData: JSON.stringify(inputQuestion) } )
+        axiosConfig.put(`/admin/question/${inputQuestion?.id || 0}`, { questionData: JSON.stringify(inputQuestion) } )
             .then(res => {
+                if (inputQuestion.isNew) { 
+                    
+                    selectQuestion({
+                        ...inputQuestion,
+                        id: res.data.questionId
+                    });
+                    
+                    // loadActiveTestAndQuestions again to fetch all questions including the new one
+                    loadActiveTestAndQuestions();
+                }
                 if (res.status) { return alert('Question has been saved successfully!'); }
                 
                 alert('Question has NOT been saved!');
@@ -101,11 +115,27 @@ export default function ManageTests () {
                             onClick={() => setActiveTest(test)}>{test.name}</a>)}
                     </div>
 
-                    <div className="">
-                        {questions && questions.map(question => <a key={question.id} 
-                            className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
-                            onClick={() => selectQuestion(question)}>Question {question.id}</a>)}
-                    </div>
+                    {
+                     questions?.length && (
+                        <div className="">
+                            {questions.map(question => <a key={question.id} 
+                                className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
+                                onClick={() => selectQuestion(question)}>Question {question.id}</a>)}
+
+                            <br />
+
+                            <button className="btn btn-light m-3" onClick={() => setQuestions([
+                                ...questions, {
+                                    isNew: true,
+                                    id: 0,
+                                    testId: activeTest.id,
+                                    question: '',
+                                    answers: [],
+                                }
+                            ])}>Add Question</button>   
+                        </div>
+                     )   
+                    }
 
                     <div className="main-title">Test</div>
 
@@ -119,7 +149,7 @@ export default function ManageTests () {
                                 value={inputQuestion?.question} 
                                 onChange={(event) => inputsHandler({ event, updateItem: updateItem.questionText })} />
                         </div>
-                        <button className="btn btn-secondary m-3" disabled>Add Question</button>
+                        
                         <div className="answers mb-5">
                                 {inputQuestion.answers.map((answer, index) => <div key={answer.id}
                                     className='answer'>

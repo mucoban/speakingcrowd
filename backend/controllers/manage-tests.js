@@ -9,12 +9,16 @@ async function setQuestion(req, res, next) {
 
         const question = JSON.parse(questionData);
         console.log(question);
-        
 
-        const update = await db.query(`UPDATE  questions Q SET Q.text = ? WHERE Q.id = ?`,  [question.question, question.id]);
+        let update;
+        if (question.isNew) {
+            update = await db.query(`INSERT INTO questions SET text = ?, test_id = ?`,  [question.question, question.testId]);
+        }
+        else {
+            update = await db.query(`UPDATE  questions Q SET Q.text = ? WHERE Q.id = ?`,  [question.question, question.id]);
+        }
         
         if (!update.affectedRows) return res.json({ status: false, message: 'not saved' });
-        console.log('answer0');
 
         const allAnswersSavedPromises = 
             await question.answers.map(async (answer) => {
@@ -33,7 +37,11 @@ async function setQuestion(req, res, next) {
         
         if (allAnswersSaved.some(answer => !answer)) return res.json({ status: false, message: 'not saved(answers)' });
 
-        res.json({ status: true, message: 'saved successfully' });
+        res.json({ 
+            status: true, 
+            message: 'saved successfully', 
+            questionId: update.insertId || null 
+        });
     }
     catch (error) {
         res.status(500).json(error);

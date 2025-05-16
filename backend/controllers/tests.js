@@ -32,10 +32,11 @@ async function getTestQuestionsAnswers(req, res, next) {
         let rows = await db.query(`select 
             T.id as t_id, T.name as t_name, Q.id as q_id, Q.text as q_text,
             A.id as a_id, A.text as a_text, A.correct as a_correct
-            from tests T, questions Q, answers A 
-            where Q.test_id = T.id AND A.question_id = Q.id AND T.id = ?`, 
+            from tests T, questions Q
+            LEFT JOIN answers A ON Q.id = A.question_id
+            where Q.test_id = T.id AND T.id = ?`, 
             [req.params.id]);
-
+            
         if (rows.length) {
             rows = rows.reduce((total, item) => {
                 const foundIndex = total.findIndex(t => t.id === item.q_id);
@@ -47,10 +48,11 @@ async function getTestQuestionsAnswers(req, res, next) {
                 }
 
                 if (foundIndex === -1) {
+
                     total.push({
                         id: item.q_id,
                         question: item.q_text,
-                        answers: [answer]
+                        answers: item.a_id ? [answer] : []
                     });
                 }
                 else {
