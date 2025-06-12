@@ -57,6 +57,23 @@ export default function ManageTests () {
         });
     }
 
+    const addAnswer = () => {
+        const newAnswerId = 1 + Math.max(0, ...activeQuestion.answers.map(answer => answer.id));
+        
+        const question = {
+            ...activeQuestion,
+            answers: [
+                ...activeQuestion.answers,
+                { 
+                    id: newAnswerId, 
+                    text: '', 
+                    correct: null
+                 }
+            ]
+        };
+        setActiveAndInputQuestion(question);
+    }
+
     useEffect(() => {
         if (activeTest?.id) {
             loadActiveTestAndQuestions();
@@ -71,8 +88,7 @@ export default function ManageTests () {
             } );
         }, [activeQuestion, inputQuestion]);
 
-    const selectQuestion = (question) => {
-        
+    const setActiveAndInputQuestion = (question) => {
         const cloneA = _.cloneDeep(question);
         const cloneB = _.cloneDeep(question);
         setActiveQuestion(cloneA);
@@ -87,7 +103,7 @@ export default function ManageTests () {
             .then(res => {
                 if (inputQuestion.isNew) { 
                     
-                    selectQuestion({
+                    setActiveAndInputQuestion({
                         ...inputQuestion,
                         id: res.data.questionId
                     });
@@ -95,6 +111,8 @@ export default function ManageTests () {
                     // loadActiveTestAndQuestions again to fetch all questions including the new one
                     loadActiveTestAndQuestions();
                 }
+
+                setActiveAndInputQuestion(res.data.question);
                 if (res.status) { return alert('Question has been saved successfully!'); }
                 
                 alert('Question has NOT been saved!');
@@ -114,13 +132,14 @@ export default function ManageTests () {
                             className={`btn m-3 ${test.id === activeTest?.id ? 'btn-primary' : 'btn-secondary'}`} 
                             onClick={() => setActiveTest(test)}>{test.name}</a>)}
                     </div>
-
+                
                     {
                      questions?.length && (
                         <div className="">
+
                             {questions.map(question => <a key={question.id} 
                                 className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
-                                onClick={() => selectQuestion(question)}>Question {question.id}</a>)}
+                                onClick={() => setActiveAndInputQuestion(question)}>Question {question.id}</a>)}
 
                             <br />
 
@@ -149,7 +168,9 @@ export default function ManageTests () {
                                 value={inputQuestion?.question} 
                                 onChange={(event) => inputsHandler({ event, updateItem: updateItem.questionText })} />
                         </div>
-                        
+
+                        <button className="btn btn-secondary m-1" onClick={addAnswer}>Add Answer</button>
+
                         <div className="answers mb-5">
                                 {inputQuestion.answers.map((answer, index) => <div key={answer.id}
                                     className='answer'>
