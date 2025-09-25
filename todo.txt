@@ -6,10 +6,13 @@ Create ceate answers functionality
     - backend is done
     - for the exisiting question, add answer and change it after save without reload is done
     - adding multiple answers for an exisiting question at once is done
-
-    next:
     - check why value of a newly added answer resets upon adding another answer
     - add multiple answers for a new question at once
+
+    next:
+    - delete an answer
+    - delete question with its answers
+    - add new test
     
 SET text = 'şiiik5' 
 WHERE id IN (select id from answers where question_id = 199) AND id = 18;

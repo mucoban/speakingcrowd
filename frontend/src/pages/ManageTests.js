@@ -61,9 +61,9 @@ export default function ManageTests () {
         const newAnswerId = 1 + Math.max(0, ...activeQuestion.answers.map(answer => answer.id));
         
         const question = {
-            ...activeQuestion,
+            ...inputQuestion,
             answers: [
-                ...activeQuestion.answers,
+                ...inputQuestion.answers,
                 { 
                     id: newAnswerId, 
                     text: '', 
