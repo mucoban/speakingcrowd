@@ -4,10 +4,11 @@ const _ = require('lodash');
 
 export default function ManageTests () {
 
-    const updateItem = {
-        questionText: 0,
-        answerText: 1,
-        answerCorrectness: 2,
+    const UPDATE_ITEM = {
+        QUESTION_TEXT: 0,
+        ANSWER_TEXT: 1,
+        ANSWER_CORRECTNESS: 2,
+        ANSWER_DELETE: 3,
     };
 
     const [tests, setTests] = useState([]);
@@ -18,26 +19,36 @@ export default function ManageTests () {
 
     const inputsHandler = (params) => {
         switch(params.updateItem) {
-            case updateItem.questionText:
+            case UPDATE_ITEM.QUESTION_TEXT:
                 setInputQuestion( { ...inputQuestion, [params.event.target.name]: params.event.target.value} );
                 break;
-            case updateItem.answerText:
-                const answers = inputQuestion.answers.slice();
+            case UPDATE_ITEM.ANSWER_TEXT:
+                const answers = inputQuestion.answers.slice(); // use js deepclone, examle lodash deepclone
                 answers[params.answerIndex].text = params.event.target.value;
                 setInputQuestion( { 
                     ...inputQuestion, 
                     answers
                 } );
                 break;
-            case updateItem.answerCorrectness:
-                const answersB = inputQuestion.answers.slice();
-                const correctAnswer = answersB.find(answer => answer.correct === 1);
+            case UPDATE_ITEM.ANSWER_CORRECTNESS:
+                // const answersB = inputQuestion.answers.slice();
+                // const correctAnswer = answersB.find(answer => answer.correct === 1);
+                const correctAnswer = inputQuestion.answers.find(answer => answer.correct === 1);
                 correctAnswer && (correctAnswer.correct = 0);
-                answersB[params.answerIndex].correct = 1;
+                // answersB[params.answerIndex].correct = 1;
+                inputQuestion.answers[params.answerIndex].correct = 1;
                 setInputQuestion( { 
-                    ...inputQuestion, 
-                    answersB
+                    ...inputQuestion
                 } );
+                break;
+            case UPDATE_ITEM.ANSWER_DELETE:
+                const answersC = inputQuestion.answers.slice();
+                answersC.splice(params.answerIndex, 1);
+                
+                setInputQuestion({ 
+                    ...inputQuestion, 
+                    answers: answersC
+                });
                 break;
             default:
         }     
@@ -96,7 +107,7 @@ export default function ManageTests () {
     }
 
     const onSubmit = () => {
-        const clone = _.cloneDeep(inputQuestion);
+        const clone = _.cloneDeep(inputQuestion);        
         setActiveQuestion(clone);
         
         axiosConfig.put(`/admin/question/${inputQuestion?.id || 0}`, { questionData: JSON.stringify(inputQuestion) } )
@@ -166,7 +177,7 @@ export default function ManageTests () {
                             <textarea className="w-100" 
                                 name='question' 
                                 value={inputQuestion?.question} 
-                                onChange={(event) => inputsHandler({ event, updateItem: updateItem.questionText })} />
+                                onChange={(event) => inputsHandler({ event, updateItem: UPDATE_ITEM.QUESTION_TEXT })} />
                         </div>
 
                         <button className="btn btn-secondary m-1" onClick={addAnswer}>Add Answer</button>
@@ -178,16 +189,18 @@ export default function ManageTests () {
                                             <input value={answer.text}
                                                 onChange={(event) => inputsHandler({ 
                                                     event, 
-                                                    updateItem: updateItem.answerText,
+                                                    updateItem: UPDATE_ITEM.ANSWER_TEXT,
                                                     answerIndex: index 
                                                 })} />
                                         </span>
-                                        <button className="btn btn-secondary m-1">-</button>
-                                        <button className="btn btn-secondary m-1">x</button>
+                                        <button className="btn btn-secondary m-1" onClick={() => inputsHandler({ 
+                                                updateItem: UPDATE_ITEM.ANSWER_DELETE,
+                                                answerIndex: index
+                                            })}>-</button>
                                         <button 
                                             className={`btn m-1 ${answer?.correct ? 'btn-primary' : 'btn-secondary'}`} 
                                             onClick={() => inputsHandler({ 
-                                                updateItem: updateItem.answerCorrectness,
+                                                updateItem: UPDATE_ITEM.ANSWER_CORRECTNESS,
                                                 answerIndex: index 
                                             })}>Correct</button>
                                     </div>)}
