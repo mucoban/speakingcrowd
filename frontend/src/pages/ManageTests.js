@@ -23,7 +23,7 @@ export default function ManageTests () {
                 setInputQuestion( { ...inputQuestion, [params.event.target.name]: params.event.target.value} );
                 break;
             case UPDATE_ITEM.ANSWER_TEXT:
-                const answers = inputQuestion.answers.slice(); // use js deepclone, examle lodash deepclone
+                const answers = inputQuestion.answers;
                 answers[params.answerIndex].text = params.event.target.value;
                 setInputQuestion( { 
                     ...inputQuestion, 
@@ -31,18 +31,15 @@ export default function ManageTests () {
                 } );
                 break;
             case UPDATE_ITEM.ANSWER_CORRECTNESS:
-                // const answersB = inputQuestion.answers.slice();
-                // const correctAnswer = answersB.find(answer => answer.correct === 1);
                 const correctAnswer = inputQuestion.answers.find(answer => answer.correct === 1);
                 correctAnswer && (correctAnswer.correct = 0);
-                // answersB[params.answerIndex].correct = 1;
                 inputQuestion.answers[params.answerIndex].correct = 1;
                 setInputQuestion( { 
                     ...inputQuestion
                 } );
                 break;
             case UPDATE_ITEM.ANSWER_DELETE:
-                const answersC = inputQuestion.answers.slice();
+                const answersC = inputQuestion.answers;
                 answersC.splice(params.answerIndex, 1);
                 
                 setInputQuestion({ 

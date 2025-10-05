@@ -1,5 +1,5 @@
 on-going:
-    - use deepclone for other switch cases
+    - delete question with its answers / started
 
 done
     - delete answers of a question
@@ -10,7 +10,6 @@ done
     - add multiple answers for a new question at once
 
 next:
-    - delete question with its answers
     - select the newly added question
     - add new test
 
