@@ -65,6 +65,11 @@ export default function ManageTests () {
         });
     }
 
+    const selectTest = (test) => {
+        setActiveTest(test);
+        setActiveQuestion(null);
+    };
+
     const addAnswer = () => {
         const newAnswerId = 1 + Math.max(0, ...activeQuestion.answers.map(answer => answer.id));
         
@@ -127,6 +132,21 @@ export default function ManageTests () {
             });
     }
 
+    const deleteQuestion = () => {
+
+        if (!window.confirm(`Delete question ${activeQuestion?.id}`)) return;
+        
+        axiosConfig.delete(`/admin/question/${activeQuestion?.id}`)
+            .then(res => {
+                if (res.status) { 
+                    setActiveQuestion(null);
+                    loadActiveTestAndQuestions();
+                    return alert('Question has been saved deleted!');
+                 }
+                alert('Question has NOT been deleted!');
+            });
+    }
+
     return <div className="test-page">
 
         <div className="container">
@@ -138,20 +158,10 @@ export default function ManageTests () {
                     <div className="">
                         {tests && tests.map(test => <a key={test.id} 
                             className={`btn m-3 ${test.id === activeTest?.id ? 'btn-primary' : 'btn-secondary'}`} 
-                            onClick={() => setActiveTest(test)}>{test.name}</a>)}
+                            onClick={() => selectTest(test)}>{test.name}</a>)}
                     </div>
-                
-                    {
-                     questions?.length && (
-                        <div className="">
 
-                            {questions.map(question => <a key={question.id} 
-                                className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
-                                onClick={() => setActiveAndInputQuestion(question)}>Question {question.id}</a>)}
-
-                            <br />
-
-                            <button className="btn btn-light m-3" onClick={() => setQuestions([
+                    <button className="btn btn-light m-3" onClick={() => setQuestions([
                                 ...questions, {
                                     isNew: true,
                                     id: 0,
@@ -159,12 +169,24 @@ export default function ManageTests () {
                                     question: '',
                                     answers: [],
                                 }
-                            ])}>Add Question</button>   
+                            ])}>Add Question</button> 
+                
+                    {
+                     !questions?.length ? null : (
+                        <div className="">
+
+                            {questions.map(question => <a key={question.id} 
+                                className={`btn m-3 ${question.id === activeQuestion?.id ? 'btn-primary' : 'btn-secondary'}`} 
+                                onClick={() => setActiveAndInputQuestion(question)}>Question {question.id}</a>)}
+
+                            <br />
+  
+                            {activeQuestion && (<button className="btn btn-warning" onClick={deleteQuestion}>delete the question</button>)}
+                            
                         </div>
                      )   
                     }
 
-                    <div className="main-title">Test</div>
 
                     {activeQuestion && <div>
 

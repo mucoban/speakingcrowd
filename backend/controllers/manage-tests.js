@@ -95,6 +95,30 @@ async function setQuestion(req, res, next) {
     }
 }
 
+async function deleteQuestion(req, res) {
+
+    try {
+        
+        const questionId = req.params.id
+
+        const deleteQuestion = await query(`DELETE FROM questions Q WHERE Q.id = ?`,  [questionId]);
+
+        if (!deleteQuestion.affectedRows) return res.json({ status: false, message: 'not deleted' });
+
+        await query(`DELETE FROM answers A WHERE A.question_id = ?`,  [questionId]);
+
+        res.json({ 
+            status: true, 
+            message: 'deleted successfully'
+        });
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+
 module.exports = {
-    setQuestion
+    setQuestion,
+    deleteQuestion
 }

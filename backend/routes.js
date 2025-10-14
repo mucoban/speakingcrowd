@@ -19,4 +19,5 @@ module.exports = function(app) {
     app.get('/test-q-a/:id', checkAuthentication, tests.getTestQuestionsAnswers);
     app.post('/assess-selection', checkAuthentication, tests.assessSelection);
     app.put('/admin/question/:id', checkAuthentication, manageTests.setQuestion);
+    app.delete('/admin/question/:id', checkAuthentication, manageTests.deleteQuestion);
 }

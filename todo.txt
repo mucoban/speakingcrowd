@@ -1,7 +1,7 @@
 on-going:
-    - delete question with its answers / started
-
+    
 done
+    - delete question with its answers
     - delete answers of a question
     - backend is done
     - for the exisiting question, add answer and change it after save without reload is done
