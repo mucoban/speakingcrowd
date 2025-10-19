@@ -1,4 +1,5 @@
 on-going:
+    - select the newly added question / check and push
     
 done
     - delete question with its answers
@@ -10,9 +11,9 @@ done
     - add multiple answers for a new question at once
 
 next:
-    - select the newly added question
     - add new test
-
+    - chek all manage-test functions
+    - find a way to run latest node 25
 
 
 

@@ -138,14 +138,28 @@ export default function ManageTests () {
         
         axiosConfig.delete(`/admin/question/${activeQuestion?.id}`)
             .then(res => {
-                if (res.status) { 
+                if (res.status && res.data.status) { 
                     setActiveQuestion(null);
                     loadActiveTestAndQuestions();
                     return alert('Question has been saved deleted!');
-                 }
+                }
                 alert('Question has NOT been deleted!');
             });
     }
+
+    const addQuestion = () => {
+        const newQuestion = {
+            isNew: true,
+            id: 0,
+            testId: activeTest.id,
+            question: '',
+            answers: [],
+        };
+
+        setQuestions([ ...questions, newQuestion ]);
+        setActiveAndInputQuestion(newQuestion);
+    }
+
 
     return <div className="test-page">
 
@@ -161,15 +175,7 @@ export default function ManageTests () {
                             onClick={() => selectTest(test)}>{test.name}</a>)}
                     </div>
 
-                    <button className="btn btn-light m-3" onClick={() => setQuestions([
-                                ...questions, {
-                                    isNew: true,
-                                    id: 0,
-                                    testId: activeTest.id,
-                                    question: '',
-                                    answers: [],
-                                }
-                            ])}>Add Question</button> 
+                    <button className="btn btn-light m-3" onClick={addQuestion}>Add Question</button> 
                 
                     {
                      !questions?.length ? null : (
