@@ -1,0 +1,21 @@
+on-going:
+    - select the newly added question / check and push
+    
+done
+    - delete question with its answers
+    - delete answers of a question
+    - backend is done
+    - for the exisiting question, add answer and change it after save without reload is done
+    - adding multiple answers for an exisiting question at once is done
+    - check why value of a newly added answer resets upon adding another answer
+    - add multiple answers for a new question at once
+
+next:
+    - add new test
+    - chek all manage-test functions
+    - find a way to run latest node 25
+
+
+
+run:
+node --env-file=.env server.js

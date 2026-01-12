@@ -11,6 +11,16 @@ async function query(sql, params) {
   }
 }
 
+async function escape(value) {
+  try {
+    const connection = await mysql.createConnection(config.db);
+    return connection.escape(value);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 module.exports = {
-  query
+  query,
+  escape
 }
